@@ -32,8 +32,23 @@ def in_target():
         T_target.append(tar)
         code += 1
 
-def cut_branch(field,T_field):
-    if T_field.count(field)==0:
+def deleteFalseway(field,corners):
+    ind_y=-1
+    for y in field:
+        ind_y += 1
+        ind_x = -1
+        for x in y:
+            ind_x += 1
+            if x == 2:
+                if field[ind_y + 1][ind_x]==2 and field[ind_y][ind_x + 1]==2 and field[ind_y + 1][ind_x + 1]==2:
+                    return False
+    for corner in corners:
+        if corner == 2:
+            return False
+    return True
+
+def cut_branch(field,T_field,corners):
+    if T_field.count(field)==0 and deleteFalseway(field,corners):
         return True
     else:
         return False
@@ -115,11 +130,15 @@ def check_goal(field,target):
             return False
     return True
 
-def C_tree(field,point,tree,target):
+def C_tree(field,point,tree,target,corners):
     global T_field
     global step
-#    if step > 3:
+#    if step > 11:
 #        print('超出设定')
+#        FINALtime = time.time()
+#        alltime = FINALtime - starttime
+#        print("耗时：",alltime)
+
 #        exit(0)
     nfield = copy.deepcopy(field)
     new_tree=[]
@@ -133,7 +152,7 @@ def C_tree(field,point,tree,target):
                 nway.append(i)
                 result = move(nfield,nway,point)
                 if result[0]:
-                    if cut_branch(result[1],T_field):
+                    if cut_branch(result[1],T_field,corners):
                         if check_goal(result[1],target):
                             return nway
                         T_field.append(copy.deepcopy(result[1]))
@@ -149,7 +168,7 @@ def C_tree(field,point,tree,target):
             way.append(i)
             result = move(nfield,way,point)
             if result[0]:
-                if cut_branch(result[1],T_field):
+                if cut_branch(result[1],T_field,corners):
                     if check_goal(result[1],target):
                         return way
                     T_field.append(copy.deepcopy(result[1]))
@@ -158,7 +177,49 @@ def C_tree(field,point,tree,target):
                     continue
             else:
                 continue
-    return C_tree(field,point,new_tree,target)
+    return C_tree(field,point,new_tree,target,corners)
+
+def in_corners():
+    code = 1
+    T_corners=[]
+    while True:
+        cor_str = input('cor%d:'%(code))
+        if cor_str == 'end':
+            return T_corners
+        cor = [int(x) for x in cor_str]
+        T_corners.append(cor)
+        code += 1
+
+def find_corners(field,target):
+    corners =[]
+    ind_y=-1
+    for y in field:
+        ind_y += 1
+        ind_x = -1
+        for x in y:
+            ind_x += 1
+            if x == 0:
+                try:
+                    if field[ind_y + 1][ind_x]==0 and field[ind_y][ind_x + 1]==0:
+                        corners.append((ind_y + 1,ind_x + 1))
+                    if field[ind_y + 1][ind_x]==0 and field[ind_y][ind_x - 1]==0:
+                        corners.append((ind_y + 1,ind_x - 1))
+                    if field[ind_y - 1][ind_x]==0 and field[ind_y][ind_x + 1]==0:
+                        corners.append((ind_y - 1,ind_x + 1))
+                    if field[ind_y - 1][ind_x]==0 and field[ind_y][ind_x - 1]==0:
+                        corners.append((ind_y - 1,ind_x - 1))
+                except:
+                    continue
+    for each in corners:
+        for any in each:
+            if any <0:
+                try:
+                    
+                    corners.remove(each)
+                except:
+                    continue
+    return corners
+
 
 def answer(get):
     t_answer = []
@@ -177,17 +238,22 @@ def main():
     global T_field
     field= in_field()
 #    field=[[0,0,0,0,0,0,0,0],[0,0,1,1,0,0,0,0],[0,0,1,1,1,1,0,0],[0,0,0,1,0,1,0,0],[0,1,0,2,0,1,3,0],[0,1,2,1,1,0,1,0],[0,1,1,1,1,2,1,0],[0,0,0,0,0,0,0,0]]
+#    field = [[0,0,0,0,0,0,0,0,0],[0,3,1,1,1,1,1,1,0],[0,1,2,2,1,2,2,1,0],[0,2,1,1,1,2,1,0],[0,1,2,2,1,2,2,1,0],[0,1,2,1,1,1,1,1,0],[0,0,0,0,0,0,0,0,0]]#难度很高
     target=in_target()
 #    target=[[4,1],[5,1],[6,1]]
+#    target =[[1,3],[2,4],[4,4],[5,3],[3,1],[3,2],[3,3],[3,4],[3,5],[3,6],[3,7]]
     T_field.append(copy.deepcopy(field))
     num=0
     for Ly in field:
         num += Ly.count(2)
     if len(target) == num:
         point = Fpoint(field)
+#        corners = find_corners(field,target)
+        corners = in_corners()
+#        print(corners)
         tree=[]
         starttime = time.time()
-        get = C_tree(field,point,tree,target)
+        get = C_tree(field,point,tree,target,corners)
         FINALtime = time.time()
         alltime = FINALtime - starttime
         print("耗时：",alltime)
