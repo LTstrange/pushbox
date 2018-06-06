@@ -145,6 +145,7 @@ def C_tree(field,point,tree,target,corners):
     step +=1
     print("searching step%d..." %(step))
     print('此时tree内元素数量',len(tree))
+    ft_time = time.time()
     if len(tree) !=0:
         for way in tree:
             for i in range(4):
@@ -177,6 +178,8 @@ def C_tree(field,point,tree,target,corners):
                     continue
             else:
                 continue
+    end_time = time.time()
+    print("this step use %f s" %(end_time - ft_time))
     return C_tree(field,point,new_tree,target,corners)
 
 def in_corners():
@@ -236,12 +239,12 @@ def answer(get):
 
 def main():
     global T_field
-    field= in_field()
+#    field= in_field()
 #    field=[[0,0,0,0,0,0,0,0],[0,0,1,1,0,0,0,0],[0,0,1,1,1,1,0,0],[0,0,0,1,0,1,0,0],[0,1,0,2,0,1,3,0],[0,1,2,1,1,0,1,0],[0,1,1,1,1,2,1,0],[0,0,0,0,0,0,0,0]]
-#    field = [[0,0,0,0,0,0,0,0,0],[0,3,1,1,1,1,1,1,0],[0,1,2,2,1,2,2,1,0],[0,2,1,1,1,1,2,1,0],[0,1,2,2,1,2,2,1,0],[0,1,2,1,1,1,1,1,0],[0,0,0,0,0,0,0,0,0]]#难度很高
-    target=in_target()
+    field = [[0,0,0,0,0,0,0,0,0],[0,3,1,1,1,1,1,1,0],[0,1,2,2,1,2,2,1,0],[0,2,1,1,1,1,2,1,0],[0,1,2,2,1,2,2,1,0],[0,1,2,1,1,1,1,1,0],[0,0,0,0,0,0,0,0,0]]#难度很高
+#    target=in_target()
 #    target=[[4,1],[5,1],[6,1]]
-#    target =[[1,3],[2,4],[4,4],[5,3],[3,1],[3,2],[3,3],[3,4],[3,5],[3,6],[3,7]]
+    target =[[1,3],[2,4],[4,4],[5,3],[3,1],[3,2],[3,3],[3,4],[3,5],[3,6],[3,7]]
 #    target=[[4,8],[4,9],[4,10],[4,11],[5,8],[5,9],[5,10],[5,11],[6,8],[6,9],[6,10],[6,11],[7,8],[7,9],[7,10],[7,11]]
     T_field.append(copy.deepcopy(field))
     num=0
@@ -250,8 +253,8 @@ def main():
     if len(target) == num:
         point = Fpoint(field)
 #        corners = find_corners(field,target)
-        corners = in_corners()
-#        corners = [[1,1],[1,7],[5,1],[5,7]]
+#        corners = in_corners()
+        corners = [[1,1],[1,7],[5,1],[5,7]]
 #        corners=[[1,1],[1,3],[1,5],[1,6],[1,13],[3,16],[4,1],[4,3],[4,5],[4,6],[4,18],[5,13],[5,18],[6,1],[6,6],[7,13],[7,18],[8,1],[8,7],[8,12],[9,5],[9,18],[10,7],[10,10],[10,12],[10,17]]
 #        print(corners)
         tree=[]
